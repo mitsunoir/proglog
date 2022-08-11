@@ -27,10 +27,10 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Install cfssl
-        run: go install github.com/cloudflare/cfssl/cmd/cfssl@v1.6.1
+        run: go install github.com/cloudflare/cfssl/cmd/cfssl
 
       - name: Install cfssljson
-        run: go install github.com/cloudflare/cfssl/cmd/cfssljson@v1.6.1
+        run: go install github.com/cloudflare/cfssl/cmd/cfssljson
 
       - name: Certification setup
         run: make init && make gencert 
