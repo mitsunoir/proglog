@@ -32,9 +32,6 @@ jobs:
       - name: Install cfssljson
         run: go install github.com/cloudflare/cfssl/cmd/cfssljson@v1.6.1
 
-      - name: Check PATH
-        run: echo $PATH && echo $GOPATH && echo $GOBIN
-
   build:
     needs: setup
     runs-on: ubuntu-latest
@@ -50,5 +47,18 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
+      - name: Check PATH
+        run: echo $PATH
+
+      - name: Check PATH
+        run: echo $GOPATH
+
+      - name: Check PATH
+        run: echo $GOROOT
+
+      - name: Set PATH
+        run: export PATH=$GOROOT/bin:$PATH
+
       - name: test
-        run: PATH=$GOPATH/bin:$PATH make init && make gencert && make test
+        run: make init && make gencert && make test
