@@ -35,6 +35,12 @@ jobs:
       - name: Certification setup
         run: make init && make gencert 
 
+      - name: List .proglog
+        run: ls $HOME/.proglog
+
+      - name: Which
+        run: which cfssl
+
   build:
     needs: setup
     runs-on: ubuntu-latest
