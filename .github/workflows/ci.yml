@@ -26,33 +26,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    env:
+      PATH: $HOME/go/bin:$PATH
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
       - name: Install cfssl
         run: go install github.com/cloudflare/cfssl/cmd/cfssl@latest
 
       - name: Install cfssljson
         run: go install github.com/cloudflare/cfssl/cmd/cfssljson@latest
-
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: build
-        run: go build ./...
-
-  test:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: Set PATH
-        run: export PATH=$HOME/go/bin:$PATH
-
-      - name: Check PATH
-        run: echo $PATH
 
       - name: Certification setup
         run: export PATH=$HOME/go/bin:$PATH && make init && make gencert 
