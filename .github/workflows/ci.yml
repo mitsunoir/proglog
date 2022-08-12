@@ -26,6 +26,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Install cfssl
+        run: go install github.com/cloudflare/cfssl/cmd/cfssl@latest
+
+      - name: Install cfssljson
+        run: go install github.com/cloudflare/cfssl/cmd/cfssljson@latest
+
   build:
     needs: setup
     runs-on: ubuntu-latest
@@ -44,12 +50,6 @@ jobs:
 
       - name: Set PATH
         run: export PATH=$HOME/go/bin:$PATH
-
-      - name: Install cfssl
-        run: go install github.com/cloudflare/cfssl/cmd/cfssl@latest
-
-      - name: Install cfssljson
-        run: go install github.com/cloudflare/cfssl/cmd/cfssljson@latest
 
       - name: Certification setup
         run: make init && make gencert 
