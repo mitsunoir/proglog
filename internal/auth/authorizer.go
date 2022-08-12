@@ -29,7 +29,6 @@ type Authorizer struct {
 }
 
 func (a *Authorizer) Authorize(subject, object, action string) error {
-	fmt.Printf("subject = %s, object = %s, action = %s\n", subject, object, action)
 	if res, _ := a.enforcer.Enforce(subject, object, action); !res {
 		msg := fmt.Sprintf(
 			"%s not permitted to %s to %s.",
