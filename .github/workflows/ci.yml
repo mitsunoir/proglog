@@ -42,7 +42,7 @@ jobs:
         run: go install github.com/cloudflare/cfssl/cmd/cfssljson@latest
 
       - name: Certification setup
-        run: export PATH=$HOME/go/bin:$PATH && make init && make gencert 
+        run: make init && make gencert 
 
       - name: test
         run: make test
