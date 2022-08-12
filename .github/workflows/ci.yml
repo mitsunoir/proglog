@@ -51,8 +51,11 @@ jobs:
       - name: Set PATH
         run: export PATH=$HOME/go/bin:$PATH
 
+      - name: Check PATH
+        run: echo $PATH
+
       - name: Certification setup
-        run: make init && make gencert 
+        run: export PATH=$HOME/go/bin:$PATH && make init && make gencert 
 
       - name: test
         run: make test
