@@ -3,13 +3,22 @@ package auth
 import (
 	"fmt"
 
-	"github.com/casbin/casbin"
+	casbin "github.com/casbin/casbin/v2"
+	"github.com/casbin/casbin/v2/model"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func New(model, policy string) *Authorizer {
-	enforcer := casbin.NewEnforcer(model, policy)
+func New(_model, _policy string) *Authorizer {
+	m := model.NewModel()
+	m.AddDef("r", "r", "sub, obj, act")
+	m.AddDef("p", "p", "sub, obj, act")
+	m.AddDef("g", "g", "_, _")
+	m.AddDef("e", "e", "some(where (p.eft == allow))")
+	m.AddDef("m", "m", "g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act")
+	enforcer, _ := casbin.NewEnforcer(m)
+	_, _ = enforcer.AddPermissionForUser("root", "*", "produce")
+	_, _ = enforcer.AddPermissionForUser("root", "*", "consume")
 	return &Authorizer{
 		enforcer: enforcer,
 	}
@@ -20,7 +29,8 @@ type Authorizer struct {
 }
 
 func (a *Authorizer) Authorize(subject, object, action string) error {
-	if !a.enforcer.Enforce(subject, object, action) {
+	fmt.Printf("subject = %s, object = %s, action = %s\n", subject, object, action)
+	if res, _ := a.enforcer.Enforce(subject, object, action); !res {
 		msg := fmt.Sprintf(
 			"%s not permitted to %s to %s.",
 			subject,
