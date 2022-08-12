@@ -29,9 +29,8 @@ jobs:
   test:
     needs: setup
     runs-on: ubuntu-latest
-    env:
-      PATH: $HOME/go/bin:$PATH
     steps:
+
       - name: checkout
         uses: actions/checkout@v2
 
@@ -40,6 +39,12 @@ jobs:
 
       - name: Install cfssljson
         run: go install github.com/cloudflare/cfssl/cmd/cfssljson@latest
+
+      - name: Add path
+        run: echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      - name: Check PATH
+        run: echo $PATH
 
       - name: Certification setup
         run: make init && make gencert 
