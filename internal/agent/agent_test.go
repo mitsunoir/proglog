@@ -11,6 +11,7 @@ import (
 	api "github.com/mitsunoir/proglog/api/v1"
 	"github.com/mitsunoir/proglog/internal/agent"
 	"github.com/mitsunoir/proglog/internal/config"
+	"github.com/mitsunoir/proglog/internal/loadbalance"
 	"github.com/stretchr/testify/require"
 	"github.com/travisjeffery/go-dynaport"
 	"google.golang.org/grpc"
@@ -91,6 +92,7 @@ func TestAgent(t *testing.T) {
 		},
 	)
 	require.NoError(t, err)
+	time.Sleep(3 * time.Second)
 
 	consumeResponse, err := leaderClient.Consume(
 		context.Background(),
@@ -101,7 +103,6 @@ func TestAgent(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, consumeResponse.Record.Value, []byte("hello"))
 
-	time.Sleep(3 * time.Second)
 	followerClient := client(t, agents[1], peerTLSConfig)
 	consumeResponse, err = followerClient.Consume(
 		context.Background(),
@@ -138,7 +139,11 @@ func client(
 	require.NoError(t, err)
 
 	conn, err := grpc.Dial(
-		rpcAddr,
+		fmt.Sprintf(
+			"%s:///%s",
+			loadbalance.Name,
+			rpcAddr,
+		),
 		opts...,
 	)
 	require.NoError(t, err)
