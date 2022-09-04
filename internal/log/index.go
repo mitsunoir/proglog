@@ -3,6 +3,7 @@ package log
 import (
 	"io"
 	"os"
+	"syscall"
 
 	"github.com/tysonmote/gommap"
 )
@@ -34,10 +35,13 @@ func newIndex(f *os.File, c Config) (*index, error) {
 	); err != nil {
 		return nil, err
 	}
-	if idx.mmap, err = gommap.Map(
-		idx.file.Fd(),
-		gommap.PROT_READ|gommap.PROT_WRITE,
-		gommap.MAP_SHARED,
+	// gommap doesn't work on Linux/Arm64 so that we use syscall.Mmap.
+	if idx.mmap, err = syscall.Mmap(
+		int(idx.file.Fd()),
+		0,
+		int(c.Segment.MaxIndexBytes),
+		syscall.PROT_READ|syscall.PROT_WRITE,
+		syscall.MAP_SHARED,
 	); err != nil {
 		return nil, err
 	}
